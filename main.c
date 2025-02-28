@@ -40,16 +40,31 @@ void readInput(char *buffer, int size) {
 
 // Function to validate integer input
 int isValidInteger(char *input) {
-    for (int i = 0; input[i] != '\0'; i++) {
+    int i = 0;
+
+    if (input[0] == '-') {  
+        i = 1;
+        if (input[1] == '\0') return 0;
+    }
+
+    for (; input[i] != '\0'; i++) {
         if (!isdigit(input[i])) return 0;
     }
     return 1;
 }
 
+
 // Function to validate float input
 int isValidFloat(char *input) {
     int dotCount = 0;
-    for (int i = 0; input[i] != '\0'; i++) {
+    int i = 0;
+
+    if (input[0] == '-') {  
+        i = 1;
+        if (input[1] == '\0') return 0;
+    }
+
+    for (; input[i] != '\0'; i++) {
         if (input[i] == '.') {
             dotCount++;
             if (dotCount > 1) return 0;
@@ -58,13 +73,30 @@ int isValidFloat(char *input) {
     return 1;
 }
 
+
 // Function to create a new node
 Node* createNode(List *list) {
     Node *newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+
     newNode->field = (char**)malloc(sizeof(char*) * list->fieldCount);
+    if (!newNode->field) {
+        printf("Memory allocation failed.\n");
+        free(newNode);
+        exit(1);
+    }
+
     for (int i = 0; i < list->fieldCount; i++) {
         newNode->field[i] = (char*)malloc(sizeof(char) * 100);
+        if (!newNode->field[i]) {
+            printf("Memory allocation failed.\n");
+            exit(1);
+        }
     }
+
     newNode->next = NULL;
     return newNode;
 }
@@ -142,6 +174,10 @@ void searchNode() {
     char searchValue[100];
     printf("Enter value to search: ");
     readInput(searchValue, 100);
+    if (strlen(searchValue) == 0) {
+        printf("Search value cannot be empty.\n");
+        return;
+    }
     
     Node *temp = currentList->start;
     int found = 0;
@@ -193,7 +229,8 @@ void createList() {
         printf("Enter field name: ");
         readInput(fieldName, 50);
         
-        currentList->fieldNames[currentList->fieldCount] = strdup(fieldName);
+        currentList->fieldNames[currentList->fieldCount] = (char*)malloc(strlen(fieldName) + 1);
+        strcpy(currentList->fieldNames[currentList->fieldCount], fieldName);
         currentList->fieldTypes[currentList->fieldCount] = fieldChoice;
         currentList->fieldCount++;
     }
@@ -221,14 +258,14 @@ int main() {
                     scanf("%d", &subChoice);
                     getchar();
 
+                    if (subChoice == 3) break;
+
                     switch (subChoice) {
                         case 1: searchNode(); break;
                         case 2: displayNodes(); break;
-                        case 3: goto back;
                         default: printf("Invalid choice.\n");
                     }
                 }
-                back:
                 break;
             }
             case 3: 
