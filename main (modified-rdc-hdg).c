@@ -299,6 +299,37 @@ void insertAfter() {
     printf("Node successfully inserted after %s.\n", after_VAL);
 }
 
+void deleteAtEnd() {
+    if (currentList == NULL) {
+        printf("No list has been created yet.\n");
+        return;
+    }
+
+    if (currentList->start == NULL) {
+        printf("The list is already empty.\n");
+        return;
+    }
+
+    Node *delNode = currentList->start;
+    Node *previous = NULL;
+
+   
+    while (delNode->next != NULL) {
+        previous = delNode;
+        delNode = delNode->next;
+    }
+
+   
+    if (previous == NULL) {
+        free(currentList->start);
+        currentList->start = NULL;
+    } else {
+        previous->next = NULL;
+        free(delNode);
+    }
+
+    printf("Last node has been successfully deleted.\n");
+}
 
 
 // Function to display all nodes
@@ -418,7 +449,7 @@ int main() {
   
     while (1) {
         printf("\nMenu:\n");
-        printf("1. CREATION OF LIST\n2. TRAVERSAL OF LIST\n3. INSERTION OF NODE AT THE START\n4. INSERTION OF NODE AT THE END\n5. INSERTION OF NODE BEFORE A VALUE\n6. INSERTION OF NODE AFTER A VALUE\n11. EXIT\n");
+        printf("1. CREATION OF LIST\n2. TRAVERSAL OF LIST\n3. INSERTION OF NODE AT THE START\n4. INSERTION OF NODE AT THE END\n5. INSERTION OF NODE BEFORE A VALUE\n6. INSERTION OF NODE AFTER A VALUE\n8. DELETION OF NODE AT THE END\n11. EXIT\n");
         printf("Choice: ");
         scanf("%d", &choice);
         getchar();
@@ -457,6 +488,9 @@ int main() {
            case 6:
             	insertAfter();
             	break;
+            case 8:
+                deleteAtEnd();
+                break;
             case 11: 
                 return 0;
             default: 
