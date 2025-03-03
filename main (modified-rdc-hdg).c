@@ -299,7 +299,24 @@ void insertAfter() {
     printf("Node successfully inserted after %s.\n", after_VAL);
 }
 
+// Function to delete a node at the start
+void deleteAtStart() {
+    if (currentList == NULL || currentList->start == NULL) {
+        printf("No list or nodes available.\n");
+        return;
+    }
 
+    Node *temp = currentList->start;
+    currentList->start = currentList->start->next;
+
+    for (int i = 0; i < currentList->fieldCount; i++) {
+        free(temp->field[i]);
+    }
+    free(temp->field);
+    free(temp);
+
+    printf("Node deleted from the start.\n");
+}
 
 // Function to display all nodes
 void displayNodes() {
@@ -373,7 +390,7 @@ void searchNode() {
 }
 
 // Function to create a list
-void createList() {
+void createList( ) {
     if (currentList != NULL) {
         printf("A list has already been created.\n");
         return;
@@ -510,19 +527,19 @@ int main() {
             	insertAtEnd();
             	break;
            	case 5:
-    			insertBefore();
+    		insertBefore();
             	break; 
            case 6:
             	insertAfter();
             	break;
            case 7:
-
-            	break;
+  		deleteAtStart();
+  		break;
            case 8:
 
             	break;
            case 9:
-				deleteByValue();
+		deleteByValue();
             	break;
            case 10:
 
