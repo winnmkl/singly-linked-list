@@ -412,16 +412,74 @@ void createList() {
     printf("List '%s' has been created successfully.\n", currentList->name);
 }
 
+//Function to delete by value
+void deleteByValue() {
+    int i;
+    char delete_VAL[100];
+
+    if (currentList == NULL || currentList->start == NULL) {
+        printf("No list or nodes available.\n");
+        return;
+    }
+
+    printf("Enter the value of the node to delete: ");
+    readInput(delete_VAL, 100);
+
+    Node *previous = NULL;
+    Node *current = currentList->start;
+    int found = 0;
+
+    while (current != NULL) {
+        if (strcmp(delete_VAL, current->field[0]) == 0) {
+            found = 1;
+            break;
+        }
+        previous = current;
+        current = current->next;
+    }
+
+    if (found) {
+        if (previous == NULL) {
+            currentList->start = current->next;
+        } else {
+            previous->next = current->next;
+        }
+
+        for (i = 0; i < currentList->fieldCount; i++) {
+            free(current->field[i]);
+        }
+        free(current->field);
+        free(current);
+
+        printf("Node with value '%s' has been deleted successfully.\n", delete_VAL);
+    } else {
+        printf("The value '%s' does not exist in the list!\n", delete_VAL);
+    }
+}
+
+//Function to clear screen to avoid bloating
+void clearScreen() {
+    #ifdef _WIN32
+        system("cls");  // Windows
+    #else
+        system("clear"); // Linux/macOS
+    #endif
+}
+
+
 
 int main() {
     int choice;
   
     while (1) {
+    	clearScreen();
         printf("\nMenu:\n");
-        printf("1. CREATION OF LIST\n2. TRAVERSAL OF LIST\n3. INSERTION OF NODE AT THE START\n4. INSERTION OF NODE AT THE END\n5. INSERTION OF NODE BEFORE A VALUE\n6. INSERTION OF NODE AFTER A VALUE\n11. EXIT\n");
+        printf("1. CREATION OF LIST\n2. TRAVERSAL OF LIST\n3. INSERTION OF NODE AT THE START\n4. INSERTION OF NODE AT THE END\n5. INSERTION OF NODE BEFORE A VALUE\n6. INSERTION OF NODE AFTER A VALUE\n7. N/A\n8. N/A\n9. DELETION BY VALUE\n11. EXIT\n");
         printf("Choice: ");
         scanf("%d", &choice);
         getchar();
+        
+        clearScreen();
         
         switch (choice) {
             case 1: 
@@ -457,10 +515,24 @@ int main() {
            case 6:
             	insertAfter();
             	break;
+           case 7:
+
+            	break;
+           case 8:
+
+            	break;
+           case 9:
+				deleteByValue();
+            	break;
+           case 10:
+
+            	break;
             case 11: 
                 return 0;
             default: 
                 printf("Invalid choice.\n");
         }
+        printf("\nPress Enter to continue...");
+        getchar();
     }
 }
