@@ -301,6 +301,7 @@ void insertAfter() {
 
 // Function to delete a node at the start
 void deleteAtStart() {
+	int i;
     if (currentList == NULL || currentList->start == NULL) {
         printf("No list or nodes available.\n");
         return;
