@@ -38,7 +38,7 @@ void displayListAfterOperation() {
     }
 
     struct Node *temp = head;
-    printf("Current List: ");
+    printf("\nCurrent List: ");
     while (temp != NULL) {
         switch (temp->dataType) {
             case 1:
@@ -65,11 +65,11 @@ void displayListAfterOperation() {
 void createList() {
     clrscr();
     int n, dataType, i;
-    printf("CREATION OF LIST\n");
-    printf("Enter the data type (1: Integer, 2: Float, 3: Character, 4: String): ");
+    printf("---CREATION OF LIST---\n");
+    printf("\nEnter the data type (1: Integer, 2: Float, 3: Character, 4: String): ");
     scanf("%d", &dataType);
     getchar(); // Consume newline after scanf
-    printf("\n\nEnter the number of nodes: ");
+    printf("\n\t\nEnter the number of nodes: ");
     scanf("%d", &n);
     getchar(); // Consume newline after scanf
     printf("\n");
@@ -112,7 +112,7 @@ void createList() {
         switch (dataType) {
             case 1: {
                 int value;
-                printf("Enter data for node %d: ", i);
+                printf("\tEnter data for node %d: ", i);
                 scanf("%d", &value);
                 getchar(); // Consume newline after scanf
                 newNode->data = malloc(sizeof(int));
@@ -122,7 +122,7 @@ void createList() {
             case 2: {
                 float value;
                 char inputBuffer[100];
-                printf("Enter data for node %d: ", i);
+                printf("\tEnter data for node %d: ", i);
                 fgets(inputBuffer, sizeof(inputBuffer), stdin);
                 if (sscanf(inputBuffer, " %f", &value) != 1) { // Added leading space
                     printf("Invalid float input.\n");
@@ -134,7 +134,7 @@ void createList() {
             }
             case 3: {
                 char value;
-                printf("Enter data for node %d: ", i);
+                printf("\tEnter data for node %d: ", i);
                 scanf("%c", &value);
                 getchar(); // Consume newline after scanf
                 newNode->data = malloc(sizeof(char));
@@ -143,7 +143,7 @@ void createList() {
             }
             case 4: {
                 char value[100];
-                printf("Enter data for node %d: ", i);
+                printf("\tEnter data for node %d: ", i);
                 fgets(value, sizeof(value), stdin);
                 value[strcspn(value, "\n")] = 0;
                 newNode->data = malloc(strlen(value) + 1);
@@ -845,22 +845,22 @@ int main() {
         getchar();
 
         if (choice >= 2 && choice <= 10 && !listCreated && choice != 1) {
-            printf("List must be created first.\n");
-            printf("Press Enter to continue...");
+            printf("\nList must be created first.\n");
+            printf("\nPress Enter to continue...");
             getchar();
             continue;
         }
 
         if (choice == 1 && listCreated) {
             int overrideChoice;
-            printf("A list already exists. Do you want to override it? (1: Yes, 0: No): ");
+            printf("\nA list already exists. Do you want to override it? (1: Yes, 0: No): ");
             scanf("%d", &overrideChoice);
             getchar();
 
             if (overrideChoice == 1) {
                 emptyList(); // Clear the existing list
                 createList();
-                printf("Press Enter to continue..."); //print confirmation of override
+                printf("\nPress Enter to continue..."); //print confirmation of override
                 getchar();
             }
             continue; // Go back to the main menu
@@ -904,7 +904,7 @@ int main() {
                 printf("Invalid choice.\n");
         }
         if (choice != 11) {
-            printf("Press Enter to continue...");
+            printf("\nPress Enter to continue...");
             getchar();
         }
 
