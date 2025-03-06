@@ -45,7 +45,7 @@ void displayListAfterOperation() {
                 printf("%d", *(int *)temp->data);
                 break;
             case 2:
-                printf("%f", *(float *)temp->data);
+                printf("%.2f", *(float *)temp->data);
                 break;
             case 3:
                 printf("%c", *(char *)temp->data);
@@ -65,15 +65,26 @@ void displayListAfterOperation() {
 void createList() {
     clrscr();
     int n, dataType, i;
-    printf ("CREATION OF LIST\n");
+    printf("CREATION OF LIST\n");
     printf("Enter the data type (1: Integer, 2: Float, 3: Character, 4: String): ");
     scanf("%d", &dataType);
+    getchar(); // Consume newline after scanf
     printf("\n\nEnter the number of nodes: ");
     scanf("%d", &n);
+    getchar(); // Consume newline after scanf
     printf("\n");
-    getchar();
 
     if (n <= 0) {
+        head = NULL;
+        listCreated = 1;
+        printf("\nList created.\n");
+        displayListAfterOperation();
+        switch (dataType) {
+            case 1: printf("\nData Type is: Integer\n"); break;
+            case 2: printf("\nData Type is: Float\n"); break;
+            case 3: printf("\nData Type is: Character\n"); break;
+            case 4: printf("\nData Type is: String\n"); break;
+        }
         return;
     }
 
@@ -87,67 +98,36 @@ void createList() {
     head->dataType = dataType;
     head->next = NULL;
 
-    switch (dataType) {
-        case 1: {
-            int value;
-            printf("Enter data for node 1: ");
-            scanf("%d", &value);
-            head->data = malloc(sizeof(int));
-            *(int *)head->data = value;
-            break;
-        }
-        case 2: {
-            float value;
-            printf("Enter data for node 1: ");
-            scanf("%f", &value);
-            head->data = malloc(sizeof(float));
-            *(float *)head->data = value;
-            break;
-        }
-        case 3: {
-            char value;
-            printf("Enter data for node 1: ");
-            scanf("%c", &value);
-            getchar();
-            head->data = malloc(sizeof(char));
-            *(char *)head->data = value;
-            break;
-        }
-        case 4: {
-            char value[100];
-            printf("Enter data for node 1: ");
-            fgets(value, sizeof(value), stdin);
-            value[strcspn(value, "\n")] = 0;
-            head->data = malloc(strlen(value) + 1);
-            strcpy((char *)head->data, value);
-            break;
-        }
-    }
-
-    struct Node *temp = head;
-    i = 2;
-    while (i <= n) {
-        struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
-        if (newNode == NULL) {
+    for (i = 1; i <= n; i++) {
+        struct Node *newNode = (i == 1) ? head : (struct Node *)malloc(sizeof(struct Node));
+        if (newNode == NULL && i !=1) {
             printf("\nMemory allocation failed.\n");
             return;
         }
-        newNode->dataType = dataType;
-        newNode->next = NULL;
+        if (i != 1) {
+            newNode->dataType = dataType;
+            newNode->next = NULL;
+        }
 
         switch (dataType) {
             case 1: {
                 int value;
                 printf("Enter data for node %d: ", i);
                 scanf("%d", &value);
+                getchar(); // Consume newline after scanf
                 newNode->data = malloc(sizeof(int));
                 *(int *)newNode->data = value;
                 break;
             }
             case 2: {
                 float value;
+                char inputBuffer[100];
                 printf("Enter data for node %d: ", i);
-                scanf("%f", &value);
+                fgets(inputBuffer, sizeof(inputBuffer), stdin);
+                if (sscanf(inputBuffer, " %f", &value) != 1) { // Added leading space
+                    printf("Invalid float input.\n");
+                    return;
+                }
                 newNode->data = malloc(sizeof(float));
                 *(float *)newNode->data = value;
                 break;
@@ -156,7 +136,7 @@ void createList() {
                 char value;
                 printf("Enter data for node %d: ", i);
                 scanf("%c", &value);
-                getchar();
+                getchar(); // Consume newline after scanf
                 newNode->data = malloc(sizeof(char));
                 *(char *)newNode->data = value;
                 break;
@@ -171,11 +151,15 @@ void createList() {
                 break;
             }
         }
-
-        temp->next = newNode;
-        temp = newNode;
-        i++;
+        if (i != 1) {
+            struct Node *temp = head;
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
     }
+
     printf("\nList created.\n");
     listCreated = 1;
     displayListAfterOperation();
@@ -221,8 +205,13 @@ void insertAtStart() {
         }
         case 2: {
             float value;
+            char inputBuffer[100];
             printf("Enter value to insert: ");
-            scanf("%f", &value);
+            fgets(inputBuffer, sizeof(inputBuffer), stdin);
+            if (sscanf(inputBuffer, "%f", &value) != 1) {
+                printf("Invalid float input.\n");
+                return;
+            }
             newNode->data = malloc(sizeof(float));
             *(float *)newNode->data = value;
             break;
@@ -249,73 +238,77 @@ void insertAtStart() {
     head = newNode;
     printf("\nNode inserted at the start.\n");
     displayListAfterOperation();
+	}
+	
+	void insertAtEnd() {
+	clrscr();
+	if (head == NULL) {
+	printf("List is empty, create a list first.\n");
+	return;
+	}
+	struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+	if (newNode == NULL) {
+	printf("\nMemory allocation failed.\n");
+	return;
+	}
+	newNode->dataType = currentDataType;
+	newNode->next = NULL; 
+	switch (currentDataType) {
+    case 1: {
+        int value;
+        printf("Enter value to insert: ");
+        scanf("%d", &value);
+        newNode->data = malloc(sizeof(int));
+        *(int *)newNode->data = value;
+        break;
+    }
+    case 2: {
+        float value;
+        char inputBuffer[100];
+        printf("Enter value to insert: ");
+        fgets(inputBuffer, sizeof(inputBuffer), stdin);
+        if (sscanf(inputBuffer, "%f", &value) != 1) {
+            printf("Invalid float input.\n");
+            return;
+        }
+        newNode->data = malloc(sizeof(float));
+        *(float *)newNode->data = value;
+        break;
+    }
+    case 3: {
+        char value;
+        printf("Enter value to insert: ");
+        scanf("%c", &value);
+        getchar();
+        newNode->data = malloc(sizeof(char));
+        *(char *)newNode->data = value;
+        break;
+    }
+    case 4: {
+        char value[100];
+        printf("Enter value to insert: ");
+        fgets(value, sizeof(value), stdin);
+        value[strcspn(value, "\n")] = 0;
+        newNode->data = malloc(strlen(value) + 1);
+        strcpy((char *)newNode->data, value);
+        break;
+    }
 }
 
-void insertAtEnd() {
-    clrscr();
-    if (head == NULL) {
-        printf("List is empty, create a list first.\n");
-        return;
-    }
-    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
-    if (newNode == NULL) {
-        printf("\nMemory allocation failed.\n");
-        return;
-    }
-    newNode->dataType = currentDataType;
-    newNode->next = NULL;
-
-    switch (currentDataType) {
-        case 1: {
-            int value;
-            printf("Enter value to insert: ");
-            scanf("%d", &value);
-            newNode->data = malloc(sizeof(int));
-            *(int *)newNode->data = value;
-            break;
-        }
-        case 2: {
-        	float value;
-            printf("Enter value to insert: ");
-            scanf("%f", &value);
-            newNode->data = malloc(sizeof(float));
-            *(float *)newNode->data = value;
-            break;
-        }
-        case 3: {
-            char value;
-            printf("Enter value to insert: ");
-            scanf("%c", &value);
-            getchar();
-            newNode->data = malloc(sizeof(char));
-            *(char *)newNode->data = value;
-            break;
-        }
-        case 4: {
-            char value[100];
-            printf("Enter value to insert: ");
-            fgets(value, sizeof(value), stdin);
-            value[strcspn(value, "\n")] = 0;
-            newNode->data = malloc(strlen(value) + 1);
-            strcpy((char *)newNode->data, value);
-            break;
-        }
-    }
-
-    if (head == NULL) {
-        head = newNode;
-        printf("\nNode inserted at the end.\n");
-        displayListAfterOperation();
-        return;
-    }
-
-    struct Node *temp = head;
-    while (temp->next != NULL) {
-        temp = temp->next;
-    }
-    temp->next = newNode;
+if (head == NULL) {
+    head = newNode;
     printf("\nNode inserted at the end.\n");
     displayListAfterOperation();
+    return;
+}
+
+struct Node *temp = head;
+while (temp->next != NULL) {
+    temp = temp->next;
+}
+temp->next = newNode;
+printf("\nNode inserted at the end.\n");
+displayListAfterOperation();
 }
 
 void insertBeforeValue() {
@@ -333,47 +326,57 @@ void insertBeforeValue() {
     newNode->dataType = currentDataType;
 
     switch (currentDataType) {
-        case 1: {
-            int newValue, beforeValue;
-            printf("Enter value to insert: ");
-            scanf("%d", &newValue);
-            printf("Enter value before which to insert: ");
-            scanf("%d", &beforeValue);
-            newNode->data = malloc(sizeof(int));
-            *(int *)newNode->data = newValue;
+    case 1: {
+        int newValue, beforeValue;
+        printf("Enter value to insert: ");
+        scanf("%d", &newValue);
+        printf("Enter value before which to insert: ");
+        scanf("%d", &beforeValue);
+        newNode->data = malloc(sizeof(int));
+        *(int *)newNode->data = newValue;
 
-            if (head->dataType == 1 && *(int *)head->data == beforeValue) {
-                newNode->next = head;
-                head = newNode;
-                printf("\nNode inserted before value.\n");
-                displayListAfterOperation();
-                return;
-            }
-
-            struct Node *temp = head;
-            struct Node *prev = NULL;
-            while (temp != NULL && (temp->dataType != 1 || *(int *)temp->data != beforeValue)) {
-                prev = temp;
-                temp = temp->next;
-            }
-
-            if (temp == NULL) {
-                printf("\nValue not found.\n");
-                return;
-            }
-
-            newNode->next = temp;
-            prev->next = newNode;
+        if (head->dataType == 1 && *(int *)head->data == beforeValue) {
+            newNode->next = head;
+            head = newNode;
             printf("\nNode inserted before value.\n");
             displayListAfterOperation();
-            break;
+            return;
         }
-        case 2: {
+
+        struct Node *temp = head;
+        struct Node *prev = NULL;
+        while (temp != NULL && (temp->dataType != 1 || *(int *)temp->data != beforeValue)) {
+            prev = temp;
+            temp = temp->next;
+        }
+
+        if (temp == NULL) {
+            printf("\nValue not found.\n");
+            return;
+        }
+
+        newNode->next = temp;
+        prev->next = newNode;
+        printf("\nNode inserted before value.\n");
+        displayListAfterOperation();
+        break;
+    }
+    case 2: {
             float newValue, beforeValue;
+            char inputBufferNew[100], inputBufferBefore[100];
             printf("Enter value to insert: ");
-            scanf("%f", &newValue);
+            fgets(inputBufferNew, sizeof(inputBufferNew), stdin);
+            if (sscanf(inputBufferNew, " %f", &newValue) != 1) { // Added leading space
+                printf("Invalid float input.\n");
+                return;
+            }
             printf("Enter value before which to insert: ");
-            scanf("%f", &beforeValue);
+            fgets(inputBufferBefore, sizeof(inputBufferBefore), stdin);
+            if (sscanf(inputBufferBefore, " %f", &beforeValue) != 1) { // Added leading space
+                printf("Invalid float input.\n");
+                return;
+            }
+
             newNode->data = malloc(sizeof(float));
             *(float *)newNode->data = newValue;
 
@@ -403,81 +406,81 @@ void insertBeforeValue() {
             displayListAfterOperation();
             break;
         }
-        case 3: {
-            char newValue, beforeValue;
-            printf("Enter value to insert: ");
-            scanf("%c", &newValue);
-            getchar();
-            printf("Enter value before which to insert: ");
-            scanf("%c", &beforeValue);
-            getchar();
-            newNode->data = malloc(sizeof(char));
-            *(char *)newNode->data = newValue;
+    case 3: {
+        char newValue, beforeValue;
+        printf("Enter value to insert: ");
+        scanf("%c", &newValue);
+        getchar();
+        printf("Enter value before which to insert: ");
+        scanf("%c", &beforeValue);
+        getchar();
+        newNode->data = malloc(sizeof(char));
+        *(char *)newNode->data = newValue;
 
-            if (head->dataType == 3 && *(char *)head->data == beforeValue) {
-                newNode->next = head;
-                head = newNode;
-                printf("\nNode inserted before value.\n");
-                displayListAfterOperation();
-                return;
-            }
-
-            struct Node *temp = head;
-            struct Node *prev = NULL;
-            while (temp != NULL && (temp->dataType != 3 || *(char *)temp->data != beforeValue)) {
-                prev = temp;
-                temp = temp->next;
-            }
-
-            if (temp == NULL) {
-                printf("\nValue not found.\n");
-                return;
-            }
-
-            newNode->next = temp;
-            prev->next = newNode;
+        if (head->dataType == 3 && *(char *)head->data == beforeValue) {
+            newNode->next = head;
+            head = newNode;
             printf("\nNode inserted before value.\n");
             displayListAfterOperation();
-            break;
+            return;
         }
-        case 4: {
-            char newValue[100], beforeValue[100];
-            printf("Enter value to insert: ");
-            fgets(newValue, sizeof(newValue), stdin);
-            newValue[strcspn(newValue, "\n")] = 0;
-            printf("Enter value before which to insert: ");
-            fgets(beforeValue, sizeof(beforeValue), stdin);
-            beforeValue[strcspn(beforeValue, "\n")] = 0;
-            newNode->data = malloc(strlen(newValue) + 1);
-            strcpy((char *)newNode->data, newValue);
 
-            if (head->dataType == 4 && strcmp((char *)head->data, beforeValue) == 0) {
-                newNode->next = head;
-                head = newNode;
-                printf("\nNode inserted before value.\n");
-                displayListAfterOperation();
-                return;
-            }
-
-            struct Node *temp = head;
-            struct Node *prev = NULL;
-            while (temp != NULL && (temp->dataType != 4 || strcmp((char *)temp->data, beforeValue) != 0)) {
-                prev = temp;
-                temp = temp->next;
-            }
-
-            if (temp == NULL) {
-                printf("\nValue not found.\n");
-                return;
-            }
-
-            newNode->next = temp;
-            prev->next = newNode;
-            printf("\nNode inserted before value.\n");
-            displayListAfterOperation();
-            break;
+        struct Node *temp = head;
+        struct Node *prev = NULL;
+        while (temp != NULL && (temp->dataType != 3 || *(char *)temp->data != beforeValue)) {
+            prev = temp;
+            temp = temp->next;
         }
+
+        if (temp == NULL) {
+            printf("\nValue not found.\n");
+            return;
+        }
+
+        newNode->next = temp;
+        prev->next = newNode;
+        printf("\nNode inserted before value.\n");
+        displayListAfterOperation();
+        break;
     }
+    case 4: {
+        char newValue[100], beforeValue[100];
+        printf("Enter value to insert: ");
+        fgets(newValue, sizeof(newValue), stdin);
+        newValue[strcspn(newValue, "\n")] = 0;
+        printf("Enter value before which to insert: ");
+        fgets(beforeValue, sizeof(beforeValue), stdin);
+        beforeValue[strcspn(beforeValue, "\n")] = 0;
+        newNode->data = malloc(strlen(newValue) + 1);
+        strcpy((char *)newNode->data, newValue);
+
+        if (head->dataType == 4 && strcmp((char *)head->data, beforeValue) == 0) {
+            newNode->next = head;
+            head = newNode;
+            printf("\nNode inserted before value.\n");
+            displayListAfterOperation();
+            return;
+        }
+
+        struct Node *temp = head;
+        struct Node *prev = NULL;
+        while (temp != NULL && (temp->dataType != 4 || strcmp((char *)temp->data, beforeValue) != 0)) {
+            prev = temp;
+            temp = temp->next;
+        }
+
+        if (temp == NULL) {
+            printf("\nValue not found.\n");
+            return;
+        }
+
+        newNode->next = temp;
+        prev->next = newNode;
+        printf("\nNode inserted before value.\n");
+        displayListAfterOperation();
+        break;
+    }
+}
 }
 
 void insertAfterValue() {
@@ -492,10 +495,10 @@ void insertAfterValue() {
         printf("\nMemory allocation failed.\n");
         return;
     }
-    newNode->dataType = currentDataType;
+	newNode->dataType = currentDataType;
 
     switch (currentDataType) {
-        case 1: {
+	case 1: {
             int newValue, afterValue;
             printf("Enter value to insert: ");
             scanf("%d", &newValue);
@@ -522,10 +525,19 @@ void insertAfterValue() {
         }
         case 2: {
             float newValue, afterValue;
+            char inputBufferNew[100], inputBufferAfter[100];
             printf("Enter value to insert: ");
-            scanf("%f", &newValue);
+            fgets(inputBufferNew, sizeof(inputBufferNew), stdin);
+            if (sscanf(inputBufferNew, " %f", &newValue) != 1) { // Added leading space
+                printf("Invalid float input.\n");
+                return;
+            }
             printf("Enter value after which to insert: ");
-            scanf("%f", &afterValue);
+            fgets(inputBufferAfter, sizeof(inputBufferAfter), stdin);
+            if (sscanf(inputBufferAfter, " %f", &afterValue) != 1) { // Added leading space
+                printf("Invalid float input.\n");
+                return;
+            }
             newNode->data = malloc(sizeof(float));
             *(float *)newNode->data = newValue;
 
@@ -539,7 +551,7 @@ void insertAfterValue() {
                 return;
             }
 
-            newNode ->next = temp->next;
+            newNode->next = temp->next;
             temp->next = newNode;
             printf("\nNode inserted after value.\n");
             displayListAfterOperation();
@@ -611,8 +623,8 @@ void deleteAtStart() {
 
     struct Node *temp = head;
     head = head->next;
-    free(temp->data); // Free the data
-    free(temp); // Free the node
+    free(temp->data);
+    free(temp);
     printf("\nNode deleted from the start.\n");
     displayListAfterOperation();
 }
@@ -625,8 +637,8 @@ void deleteAtEnd() {
     }
 
     if (head->next == NULL) {
-        free(head->data); // Free the data
-        free(head); // Free the node
+        free(head->data);
+        free(head);
         head = NULL;
         printf("\nNode deleted from the end.\n");
         displayListAfterOperation();
@@ -640,8 +652,8 @@ void deleteAtEnd() {
         temp = temp->next;
     }
     prev->next = NULL;
-    free(temp->data); // Free the data
-    free(temp); // Free the node
+    free(temp->data);
+    free(temp);
     printf("\nNode deleted from the end.\n");
     displayListAfterOperation();
 }
@@ -677,16 +689,21 @@ void deleteByValue() {
             }
 
             prev->next = temp->next;
-            free(temp->data); // Free the data
-            free(temp); // Free the node
+            free(temp->data);
+            free(temp);
             printf("\nNode deleted by value.\n");
             displayListAfterOperation();
             break;
         }
         case 2: {
             float value;
+            char inputBuffer[100];
             printf("Enter value to delete: ");
-            scanf("%f", &value);
+            fgets(inputBuffer, sizeof(inputBuffer), stdin);
+            if (sscanf(inputBuffer, "%f", &value) != 1) {
+                printf("Invalid float input.\n");
+                return;
+            }
 
             if (head->dataType == 2 && *(float *)head->data == value) {
                 deleteAtStart();
@@ -706,8 +723,8 @@ void deleteByValue() {
             }
 
             prev->next = temp->next;
-            free(temp->data); // Free the data
-            free(temp); // Free the node
+            free(temp->data);
+            free(temp);
             printf("\nNode deleted by value.\n");
             displayListAfterOperation();
             break;
@@ -736,8 +753,8 @@ void deleteByValue() {
             }
 
             prev->next = temp->next;
-            free(temp->data); // Free the data
-            free(temp); // Free the node
+            free(temp->data);
+            free(temp);
             printf("\nNode deleted by value.\n");
             displayListAfterOperation();
             break;
@@ -748,7 +765,8 @@ void deleteByValue() {
             fgets(value, sizeof(value), stdin);
             value[strcspn(value, "\n")] = 0;
 
-            if (head->dataType == 4 && strcmp((char *)head->data, value) == 0) {
+            if (head->dataType == 4 && strcmp((char *)head->data, value) == 0)
+            {
                 deleteAtStart();
                 return;
             }
@@ -766,8 +784,8 @@ void deleteByValue() {
             }
 
             prev->next = temp->next;
-            free(temp->data); // Free the data
-            free(temp); // Free the node
+            free(temp->data);
+            free(temp);
             printf("\nNode deleted by value.\n");
             displayListAfterOperation();
             break;
@@ -781,9 +799,10 @@ void emptyList() {
     while (head != NULL) {
         temp = head;
         head = head->next;
-        free(temp->data); // Free the data
-        free(temp); // Free the node
+        free(temp->data);
+        free(temp);
     }
+    currentDataType = 0; 
     printf("\nList is now empty.\n");
     displayListAfterOperation();
 }
@@ -802,7 +821,7 @@ int main() {
         gotoxy(10, 8); printf("5. INSERTION OF NODE BEFORE A VALUE\n");
         gotoxy(50, 4); printf("6. INSERTION OF NODE AFTER A VALUE\n");
         gotoxy(50, 5); printf("7. DELETION OF NODE AT THE START\n");
-		gotoxy(50, 6); printf("8. DELETION OF NODE AT THE END\n");
+        gotoxy(50, 6); printf("8. DELETION OF NODE AT THE END\n");
         gotoxy(50, 7); printf("9. DELETION BY VALUE\n");
         gotoxy(50, 8); printf("10. EMPTY LIST\n");
         gotoxy(35, 10); printf("11. EXIT\n");
@@ -830,6 +849,21 @@ int main() {
             printf("Press Enter to continue...");
             getchar();
             continue;
+        }
+
+        if (choice == 1 && listCreated) {
+            int overrideChoice;
+            printf("A list already exists. Do you want to override it? (1: Yes, 0: No): ");
+            scanf("%d", &overrideChoice);
+            getchar();
+
+            if (overrideChoice == 1) {
+                emptyList(); // Clear the existing list
+                createList();
+                printf("Press Enter to continue..."); //print confirmation of override
+                getchar();
+            }
+            continue; // Go back to the main menu
         }
 
         switch (choice) {
