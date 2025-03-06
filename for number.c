@@ -3,8 +3,11 @@
 
 #ifdef _WIN32
 #include <conio.h>
+#include <windows.h> // For gotoxy
 #define clrscr() system("cls")
 #else
+#include <termios.h>
+#include <unistd.h>
 #define clrscr() printf("\033[H\033[J")
 #endif
 
@@ -14,6 +17,16 @@ struct Node {
 };
 
 struct Node *head = NULL;
+int listCreated = 0; // Flag to check if list is created
+
+#ifdef _WIN32
+void gotoxy(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+#endif
 
 void displayListAfterOperation() {
     if (head == NULL) {
@@ -24,7 +37,10 @@ void displayListAfterOperation() {
     struct Node *temp = head;
     printf("Current List: ");
     while (temp != NULL) {
-        printf("%d ", temp->data);
+        printf("%d", temp->data);
+        if (temp->next != NULL) {
+            printf(" -> ");
+        }
         temp = temp->next;
     }
     printf("\n");
@@ -35,14 +51,14 @@ void createList() {
     int n, value, i;
     printf("Enter the number of nodes: ");
     scanf("%d", &n);
-
+	printf("\n");	
     if (n <= 0) {
         return;
     }
 
     head = (struct Node *)malloc(sizeof(struct Node));
     if (head == NULL) {
-        printf("Memory allocation failed.\n");
+        printf("\nMemory allocation failed.\n");
         return;
     }
     printf("Enter data for node 1: ");
@@ -54,7 +70,7 @@ void createList() {
     while (i <= n) {
         struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
         if (newNode == NULL) {
-            printf("Memory allocation failed.\n");
+            printf("\nMemory allocation failed.\n");
             return;
         }
         printf("Enter data for node %d: ", i);
@@ -64,21 +80,25 @@ void createList() {
         temp = newNode;
         i++;
     }
-    printf("List created.\n");
+    printf("\nList created.\n");
+    listCreated = 1; // Set the flag
     displayListAfterOperation();
 }
 
 void traverseList() {
     clrscr();
     if (head == NULL) {
-        printf("List is empty.\n");
+        printf("\nList is empty.\n");
         return;
     }
 
     struct Node *temp = head;
     printf("List elements: ");
     while (temp != NULL) {
-        printf("%d ", temp->data);
+        printf("%d", temp->data);
+        if (temp->next != NULL) {
+            printf(" -> ");
+        }
         temp = temp->next;
     }
     printf("\n");
@@ -88,13 +108,13 @@ void insertAtStart(int value) {
     clrscr();
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     if (newNode == NULL) {
-        printf("Memory allocation failed.\n");
+        printf("\nMemory allocation failed.\n");
         return;
     }
     newNode->data = value;
     newNode->next = head;
     head = newNode;
-    printf("Node inserted at the start.\n");
+    printf("\nNode inserted at the start.\n");
     displayListAfterOperation();
 }
 
@@ -102,7 +122,7 @@ void insertAtEnd(int value) {
     clrscr();
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     if (newNode == NULL) {
-        printf("Memory allocation failed.\n");
+        printf("\nMemory allocation failed.\n");
         return;
     }
     newNode->data = value;
@@ -110,7 +130,7 @@ void insertAtEnd(int value) {
 
     if (head == NULL) {
         head = newNode;
-        printf("Node inserted at the end.\n");
+        printf("\nNode inserted at the end.\n");
         displayListAfterOperation();
         return;
     }
@@ -120,14 +140,14 @@ void insertAtEnd(int value) {
         temp = temp->next;
     }
     temp->next = newNode;
-    printf("Node inserted at the end.\n");
+    printf("\nNode inserted at the end.\n");
     displayListAfterOperation();
 }
 
 void insertBeforeValue(int value, int newValue) {
     clrscr();
     if (head == NULL) {
-        printf("List is empty.\n");
+        printf("\nList is empty.\n");
         return;
     }
 
@@ -144,26 +164,26 @@ void insertBeforeValue(int value, int newValue) {
     }
 
     if (temp == NULL) {
-        printf("Value not found.\n");
+        printf("\nValue not found.\n");
         return;
     }
 
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     if (newNode == NULL) {
-        printf("Memory allocation failed.\n");
+        printf("\nMemory allocation failed.\n");
         return;
     }
     newNode->data = newValue;
     newNode->next = temp;
     prev->next = newNode;
-    printf("Node inserted before value.\n");
+    printf("\nNode inserted before value.\n");
     displayListAfterOperation();
 }
 
 void insertAfterValue(int value, int newValue) {
     clrscr();
     if (head == NULL) {
-        printf("List is empty.\n");
+        printf("\nList is empty.\n");
         return;
     }
 
@@ -173,47 +193,47 @@ void insertAfterValue(int value, int newValue) {
     }
 
     if (temp == NULL) {
-        printf("Value not found.\n");
+        printf("\nValue not found.\n");
         return;
     }
 
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     if (newNode == NULL) {
-        printf("Memory allocation failed.\n");
+        printf("\nMemory allocation failed.\n");
         return;
     }
     newNode->data = newValue;
     newNode->next = temp->next;
     temp->next = newNode;
-    printf("Node inserted after value.\n");
+    printf("\nNode inserted after value.\n");
     displayListAfterOperation();
 }
 
 void deleteAtStart() {
     clrscr();
     if (head == NULL) {
-        printf("List is empty.\n");
+        printf("\nList is empty.\n");
         return;
     }
 
     struct Node *temp = head;
     head = head->next;
     free(temp);
-    printf("Node deleted from the start.\n");
+    printf("\nNode deleted from the start.\n");
     displayListAfterOperation();
 }
 
 void deleteAtEnd() {
     clrscr();
     if (head == NULL) {
-        printf("List is empty.\n");
+        printf("\nList is empty.\n");
         return;
     }
 
     if (head->next == NULL) {
         free(head);
         head = NULL;
-        printf("Node deleted from the end.\n");
+        printf("\nNode deleted from the end.\n");
         displayListAfterOperation();
         return;
     }
@@ -226,14 +246,14 @@ void deleteAtEnd() {
     }
     prev->next = NULL;
     free(temp);
-    printf("Node deleted from the end.\n");
+    printf("\nNode deleted from the end.\n");
     displayListAfterOperation();
 }
 
 void deleteByValue(int value) {
     clrscr();
     if (head == NULL) {
-        printf("List is empty.\n");
+        printf("\nList is empty.\n");
         return;
     }
 
@@ -250,13 +270,13 @@ void deleteByValue(int value) {
     }
 
     if (temp == NULL) {
-        printf("Value not found.\n");
+        printf("\nValue not found.\n");
         return;
     }
 
     prev->next = temp->next;
     free(temp);
-    printf("Node deleted by value.\n");
+    printf("\nNode deleted by value.\n");
     displayListAfterOperation();
 }
 
@@ -268,7 +288,7 @@ void emptyList() {
         head = head->next;
         free(temp);
     }
-    printf("List is now empty.\n");
+    printf("\nList is now empty.\n");
     displayListAfterOperation();
 }
 
@@ -277,7 +297,22 @@ int main() {
 
     do {
         clrscr();
-        printf("Menu:\n");
+#ifdef _WIN32
+        gotoxy(30, 2); printf("<@@ SINGLY LINKED LIST AND OPERATORS @@>\n"); // Title centered
+        gotoxy(10, 4); printf("1. CREATION OF LIST\n");
+        gotoxy(10, 5); printf("2. TRAVERSAL OF LIST\n");
+        gotoxy(10, 6); printf("3. INSERTION OF NODE AT THE START\n");
+        gotoxy(10, 7); printf("4. INSERTION OF NODE AT THE END\n");
+        gotoxy(10, 8); printf("5. INSERTION OF NODE BEFORE A VALUE\n");
+        gotoxy(50, 4); printf("6. INSERTION OF NODE AFTER A VALUE\n");
+        gotoxy(50, 5); printf("7. DELETION OF NODE AT THE START\n");
+        gotoxy(50, 6); printf("8. DELETION OF NODE AT THE END\n");
+        gotoxy(50, 7); printf("9. DELETION BY VALUE\n");
+        gotoxy(50, 8); printf("10. EMPTY LIST\n");
+        gotoxy(35, 10); printf("11. EXIT\n"); // Exit centered at bottom
+        gotoxy(30, 12); printf("Enter your choice: ");
+#else
+        printf("<@@ SINGLY LINKED LIST AND OPERATORS @@>\n\n");
         printf("1. CREATION OF LIST\n");
         printf("2. TRAVERSAL OF LIST\n");
         printf("3. INSERTION OF NODE AT THE START\n");
@@ -290,7 +325,16 @@ int main() {
         printf("10. EMPTY LIST\n");
         printf("11. EXIT\n");
         printf("Enter your choice: ");
+#endif
         scanf("%d", &choice);
+
+        if (choice >= 2 && choice <= 10 && !listCreated && choice != 1) { // Check if list is created
+            printf("List must be created first.\n");
+            printf("Press Enter to continue...");
+            getchar();
+            getchar();
+            continue;
+        }
 
         switch (choice) {
             case 1:
@@ -343,7 +387,7 @@ int main() {
             default:
                 printf("Invalid choice.\n");
         }
-        if(choice != 11){
+        if (choice != 11) {
             printf("Press Enter to continue...");
             getchar();
             getchar();

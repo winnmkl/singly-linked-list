@@ -299,8 +299,6 @@ void insertAfter() {
     printf("Node successfully inserted after %s.\n", after_VAL);
 }
 
-<<<<<<< HEAD
-=======
 // Function to delete a node at the start
 void deleteAtStart() {
 	int i;
@@ -308,7 +306,6 @@ void deleteAtStart() {
         printf("No list or nodes available.\n");
         return;
     }
->>>>>>> d98e6eefdf2361aa785c9400e7c0dbf65b0f6854
 
     Node *temp = currentList->start;
     currentList->start = currentList->start->next;
@@ -495,11 +492,7 @@ int main() {
     while (1) {
     	clearScreen();
         printf("\nMenu:\n");
-<<<<<<< HEAD
         printf("1. CREATION OF LIST\n2. TRAVERSAL OF LIST\n3. INSERTION OF NODE AT THE START\n4. INSERTION OF NODE AT THE END\n5. INSERTION OF NODE BEFORE A VALUE\n6. INSERTION OF NODE AFTER A VALUE\n7. DELETION OF NODE AT THE START\n11. EXIT\n");
-=======
-        printf("1. CREATION OF LIST\n2. TRAVERSAL OF LIST\n3. INSERTION OF NODE AT THE START\n4. INSERTION OF NODE AT THE END\n5. INSERTION OF NODE BEFORE A VALUE\n6. INSERTION OF NODE AFTER A VALUE\n7. N/A\n8. N/A\n9. DELETION BY VALUE\n11. EXIT\n");
->>>>>>> d98e6eefdf2361aa785c9400e7c0dbf65b0f6854
         printf("Choice: ");
         scanf("%d", &choice);
         getchar();
@@ -539,11 +532,6 @@ int main() {
            case 6:
             	insertAfter();
             	break;
-<<<<<<< HEAD
-            case 7:
-                deleteAtStart();
-                break;
-=======
            case 7:
   		deleteAtStart();
   		break;
@@ -556,7 +544,6 @@ int main() {
            case 10:
 
             	break;
->>>>>>> d98e6eefdf2361aa785c9400e7c0dbf65b0f6854
             case 11: 
                 return 0;
             default: 
